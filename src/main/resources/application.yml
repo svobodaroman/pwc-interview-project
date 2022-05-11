@@ -1,0 +1,4 @@
+app:
+  countries-url: https://raw.githubusercontent.com/mledoze/countries/master/countries.json
+  alg:
+    shortest-path: dijkstra
