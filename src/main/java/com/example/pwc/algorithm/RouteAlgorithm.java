@@ -1,37 +1,33 @@
 package com.example.pwc.algorithm;
 
-
-import com.example.pwc.config.AlgorithmProperties;
 import com.example.pwc.exception.PathNotFoundException;
-import com.example.pwc.graph.GraphInitializer;
-import lombok.RequiredArgsConstructor;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
 import org.jgrapht.alg.shortestpath.BFSShortestPath;
 import org.jgrapht.alg.shortestpath.BellmanFordShortestPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultEdge;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Optional;
 
-@Component
-@RequiredArgsConstructor
 public class RouteAlgorithm {
 
-    private final GraphInitializer graphInitializer;
-    private final AlgorithmProperties algorithmProperties;
-    private ShortestPathAlgorithm<String, DefaultEdge> shortestPathAlgorithm;
+    private final ShortestPathAlgorithm<String, DefaultEdge> shortestPathAlgorithm;
 
-    @PostConstruct
-    public void init() {
-        var graph = graphInitializer.initGraph();
-        shortestPathAlgorithm = getAlgorithm(graph, algorithmProperties.getShortestPath());
+    public RouteAlgorithm(Graph<String, DefaultEdge> graph,
+                          ShortestPathAlgorithms alg) {
+        shortestPathAlgorithm = createShortestPathAlgorithm(graph, alg);
     }
 
-    private ShortestPathAlgorithm<String, DefaultEdge> getAlgorithm(Graph<String, DefaultEdge> graph, ShortestPathAlgorithms alg) {
+    public List<String> getShortestPathCountriesCca3(String from, String to) {
+        return Optional.ofNullable(shortestPathAlgorithm.getPath(from, to))
+                .orElseThrow(PathNotFoundException::new)
+                .getVertexList();
+    }
+
+    static ShortestPathAlgorithm<String, DefaultEdge> createShortestPathAlgorithm(Graph<String, DefaultEdge> graph,
+                                                                                  ShortestPathAlgorithms alg) {
         switch (alg) {
             case DIJKSTRA:
                 return new DijkstraShortestPath<>(graph);
@@ -42,11 +38,5 @@ public class RouteAlgorithm {
             default:
                 throw new Error("Algorithm not supported.");
         }
-    }
-
-    public List<String> getPath(String from, String to) {
-        return Optional.ofNullable(shortestPathAlgorithm.getPath(from, to))
-                .orElseThrow(PathNotFoundException::new)
-                .getVertexList();
     }
 }

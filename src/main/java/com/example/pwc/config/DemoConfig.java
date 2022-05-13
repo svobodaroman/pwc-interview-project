@@ -1,6 +1,8 @@
 package com.example.pwc.config;
 
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import com.example.pwc.algorithm.RouteAlgorithm;
+import com.example.pwc.graph.GraphSupplier;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -10,7 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 @Configuration
-@ConfigurationPropertiesScan("com.example.demo")
+@EnableConfigurationProperties(value = {AppProperties.class, AlgorithmProperties.class})
 public class DemoConfig {
 
     @Bean
@@ -24,4 +26,11 @@ public class DemoConfig {
     public RestTemplate restTemplate() {
         return new RestTemplate(List.of(mappingJackson2HttpMessageConverter()));
     }
+
+    @Bean
+    public RouteAlgorithm shortestPathAlgorithm(GraphSupplier graphSupplier,
+                                                AlgorithmProperties algorithmProperties) {
+        return new RouteAlgorithm(graphSupplier.getGraph(), algorithmProperties.getShortestPath());
+    }
+
 }

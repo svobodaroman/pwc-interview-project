@@ -17,7 +17,7 @@ public class RoutingServiceImpl implements RoutingService {
     public List<String> getPath(String from, String to) {
         Objects.requireNonNull(from);
         Objects.requireNonNull(to);
-        return routeAlgorithm.getPath(from, to);
+        return routeAlgorithm.getShortestPathCountriesCca3(from, to);
     }
 
 }
